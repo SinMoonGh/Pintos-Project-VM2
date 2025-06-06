@@ -89,39 +89,43 @@ file_backed_destroy(struct page *page)
 void *
 do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset)
 {
-	// bool vm_alloc_page_with_initializer(enum vm_type type, void *upage, bool writable, vm_initializer *init, void *aux)
-	struct lazy_aux_file_backed *aux;
-
-	while (length > 0)
-	{
-		aux = malloc(sizeof(struct lazy_aux_file_backed));
-		aux->file = file_reopen(file);
-		aux->writable = writable;
-
-		if (length > PGSIZE)
-			aux->length = PGSIZE;
-		else
-			aux->length = length;
-
-		aux->offset = offset;
-
-		if (!vm_alloc_page_with_initializer(VM_FILE, addr, writable, lazy_load_file_backed, aux))
-		{
-			free(aux);
-			return NULL;
-		}
-		// 쓴 만큼 offset, length 업데이트.
-		offset += aux->length;
-		length -= aux->length;
-		// addr = (void *)((char *) addr +  PGSIZE);
-	}
-
 	// 1. addr로부터 페이지 생성
 	// 1-1. lazy_load, aux 초기화해서 넘겨주기.
 	// 1-2. 복사(length, offset, 등등) 이거 바로 해줘요? 그럼 또 lazy 아니잖아. -> 이 내용이 lazy_load에서 타입 체크후에 복사 바로 하면 되지 않겠나.
 	// 1-3. 나머자 내용은 0으로 채워야 함.
+	void *start_addr = addr;
 
-	return addr;
+	while (length > 0)
+	{
+		struct lazy_aux_file_backed *aux = malloc(sizeof(struct lazy_aux_file_backed));
+		aux->file = file_reopen(file);
+		aux->writable = writable;
+		aux->length = length > PGSIZE ? PGSIZE : length;
+		aux->offset = offset;
+
+		if (!vm_alloc_page_with_initializer(VM_FILE, addr, writable, lazy_load_file_backed, aux))
+		{
+			// page clean??
+			free(aux);
+			while(start_addr < addr){
+				vm_dealloc_page(spt_find_page(&thread_current()->spt, addr));
+				addr -= PGSIZE;				
+			}
+			file_close(file);
+			return NULL;
+		}
+
+		// 쓴 만큼 offset, length 업데이트.
+		length -= PGSIZE;
+		offset += PGSIZE;
+		addr += PGSIZE;
+	}
+
+	struct mmap_file *mmap_file = malloc(sizeof(struct mmap_file));
+	mmap_file->start_addr = start_addr;
+	list_push_back(&thread_current()->mmap_list, &mmap_file->elem);
+
+	return start_addr;
 }
 
 bool lazy_load_file_backed(struct page *page, void *aux)
