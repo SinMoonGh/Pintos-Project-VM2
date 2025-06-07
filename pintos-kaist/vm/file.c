@@ -73,16 +73,18 @@ file_backed_destroy(struct page *page)
 	struct file_page *file_page = &page->file; 
 	struct pml4 *pml4 = thread_current()->pml4;
 	struct supplemental_page_table *spt = &thread_current()->spt;
-	if (pml4_is_dirty(pml4, page->va))
-	{
-		// write back
-		// file_write_at (struct file *file, const void *buffer, off_t size, off_t file_ofs) 
-		file_write_at(file_page->file, page->va, file_page->size, file_page->file_ofs); // Writes SIZE bytes만큼 쓴다.
-	}
-	file_close(file_page->file);
-	spt_remove_page(spt, page); // spt 제거 -> spt에서 지우면 pml4에서 계속 업데이트가 된다?
 	
-
+	dprintfg("[file backed destroy] dirty bit를 확인하기 전\n");
+	
+	if(spt_find_page(spt, page->va) != NULL && page->operations != NULL && page->frame != NULL){
+		if (pml4_is_dirty(pml4, page->va))
+		{		
+			file_write_at(file_page->file, page->va, file_page->size, file_page->file_ofs); // Writes SIZE bytes만큼 쓴다.
+		}
+		file_close(file_page->file);
+		dprintfg("[file_backed_destroy] spt remove page()할 때 문제가 발생한 것 같아\n");
+		// spt_remove_page(spt, page); // spt 제거 -> spt에서 지우면 pml4에서 계속 업데이트가 된다?
+	}	
 }
 
 /* Do the mmap */
@@ -94,6 +96,7 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 	// 1-2. 복사(length, offset, 등등) 이거 바로 해줘요? 그럼 또 lazy 아니잖아. -> 이 내용이 lazy_load에서 타입 체크후에 복사 바로 하면 되지 않겠나.
 	// 1-3. 나머자 내용은 0으로 채워야 함.
 	void *start_addr = addr;
+	size_t start_length = length;
 
 	while (length > 0)
 	{
@@ -108,7 +111,9 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 			// page clean??
 			free(aux);
 			while(start_addr < addr){
+				dprintfg("[do_mmap] vm_dealloc_page() 실행 전\n");
 				vm_dealloc_page(spt_find_page(&thread_current()->spt, addr));
+				dprintfg("[do_mmap] vm_dealloc_page() 실행 후\n");
 				addr -= PGSIZE;				
 			}
 			file_close(file);
@@ -119,11 +124,15 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 		length -= PGSIZE;
 		offset += PGSIZE;
 		addr += PGSIZE;
+		dprintfg("[do_mmap] length: %d, offset: %d, addr: %p\n", length, offset, addr);
 	}
 
 	struct mmap_file *mmap_file = malloc(sizeof(struct mmap_file));
 	mmap_file->start_addr = start_addr;
+	mmap_file->start_length = start_length;
+	dprintfg("[do_mmap] list_push_back() 이전\n");
 	list_push_back(&thread_current()->mmap_list, &mmap_file->elem);
+	dprintfg("[do_mmap] list_push_back() 이후\n");
 
 	return start_addr;
 }
@@ -133,7 +142,7 @@ bool lazy_load_file_backed(struct page *page, void *aux)
 	/* 파일에서 페이지 컨텐츠를 읽어옵니다. */
 	/* 이 함수는 주소 VA에서 첫 페이지 폴트가 발생했을 때 호출됩니다. */
 	/* 이 함수를 호출할 때 VA를 사용할 수 있습니다. */
-	dprintfd("[lazy_load_file_backed] routine start. page: %p, page->va: %p\n", page, page->va);
+	dprintfg("[lazy_load_file_backed] routine start. page: %p, page->va: %p\n", page, page->va);
 	void *va = page->va;
 	memset(page->frame->kva, 0, PGSIZE); // zero bytes 복사.
 
@@ -146,7 +155,7 @@ bool lazy_load_file_backed(struct page *page, void *aux)
 	file_page->file_ofs = lazy_aux->offset; // 
 	file_page->size = lazy_aux->length;
 	
-	dprintfd("[lazy_load_file_backed] reading file\n");
+	dprintfg("[lazy_load_file_backed] reading file\n");
 	if (file_read_at(lazy_aux->file, page->frame->kva, lazy_aux->length, lazy_aux->offset) != (int)lazy_aux->length)
 	{
 		free(lazy_aux);
@@ -164,8 +173,21 @@ void do_munmap(void *addr)
 	// munmap 하고 spt제거?
 	// 파일 close, remove는 매핑에 반영되지 않음( 프레임은 가마니)
 	// 한 파일을 여러번 mmap하는 경우에는 file_reopen을 통해 독립된 참조. -> 하나의 file이 여러번 mmap 되어 있는 걸 어떻게 알지?
+	struct thread *curr = thread_current();
+	struct supplemental_page_table *spt = &curr->spt; // 현재 스레드의 spt 정보 참조
+	dprintfg("[do_munmap] for()문 진입 전인데 이걸 출력하는 이유는 for()에서 문제가 생겼을 것 같아서\n");
 
-	struct supplemental_page_table *spt = &thread_current()-> spt; // 현재 스레드의 spt 정보 참조
-	struct page *page = spt_find_page(spt, addr); // spt정보를 가져온다.
-	file_backed_destroy(page);
+	for(struct list_elem *e = list_begin(&curr->mmap_list); e != list_end(&curr->mmap_list); e = list_next(e)){
+		dprintfg("[do_munmap] e값을 출력합니다 %p\n", e);
+		struct mmap_file *mmap_file = list_entry(e, struct mmap_file, elem);
+		if(mmap_file->start_addr == addr){
+			while(mmap_file->start_length > 0){
+				struct page *page = spt_find_page(spt, mmap_file->start_addr); // spt정보를 가져온다.
+				dprintfg("[do_munmap] file_backed_destroy() 실행 전\n");
+				file_backed_destroy(page);
+				mmap_file->start_addr += PGSIZE;
+				mmap_file->start_length -= PGSIZE;
+			}
+		}
+	}
 }
