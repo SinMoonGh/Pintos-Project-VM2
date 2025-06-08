@@ -97,16 +97,21 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 	// 1-3. 나머자 내용은 0으로 채워야 함.
 	void *start_addr = addr;
 	size_t start_length = length;
-	off_t read_bytes = file_length(file) - offset;
-	off_t zero_bytes = length - read_bytes;
-	// read_bytes와 zero_bytes가 필요하다는 데 왜 필요한지 모르겠다...
 
 	while (length > 0)
 	{
+		size_t page_read_bytes = (length < PGSIZE) ? length : PGSIZE;
+		size_t file_left = file_length(file) - offset;
+
+		// read_bytes, zeor_bytes 초기화
+		size_t read_bytes = (file_left < page_read_bytes) ? file_left : page_read_bytes;
+		off_t zero_bytes = PGSIZE - read_bytes;
+
+		// aux 초기화
 		struct lazy_aux_file_backed *aux = malloc(sizeof(struct lazy_aux_file_backed));
 		aux->file = file_reopen(file);
-		aux->writable = writable;
-		aux->length = read_bytes < PGSIZE ? read_bytes : PGSIZE;
+		aux->read_bytes = read_bytes;
+		aux->zero_bytes = zero_bytes;
 		aux->offset = offset;
 
 		if (!vm_alloc_page_with_initializer(VM_FILE, addr, writable, lazy_load_file_backed, aux))
@@ -133,6 +138,7 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 	struct mmap_file *mmap_file = malloc(sizeof(struct mmap_file));
 	mmap_file->start_addr = start_addr;
 	mmap_file->start_length = start_length;
+	mmap_file->file = file;
 	dprintfg("[do_mmap] list_push_back() 이전\n");
 	list_push_back(&thread_current()->mmap_list, &mmap_file->elem);
 	dprintfg("[do_mmap] list_push_back() 이후\n");
@@ -199,4 +205,6 @@ void do_munmap(void *addr)
 			}
 		}
 	}
+	// spt remove()를 여기서 호출해야 함.
+	// munmap()이 제대로 메모리를 해제하지 않을 가능성이 높다.
 }
