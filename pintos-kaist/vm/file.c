@@ -95,6 +95,7 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 	// 1-1. lazy_load, aux 초기화해서 넘겨주기.
 	// 1-2. 복사(length, offset, 등등) 이거 바로 해줘요? 그럼 또 lazy 아니잖아. -> 이 내용이 lazy_load에서 타입 체크후에 복사 바로 하면 되지 않겠나.
 	// 1-3. 나머자 내용은 0으로 채워야 함.
+	
 	void *start_addr = addr;
 	size_t start_length = length;
 
@@ -161,7 +162,6 @@ bool lazy_load_file_backed(struct page *page, void *aux)
 	// aux 멤버 정의 필요.
 	// file page 업데이트
 	struct lazy_aux_file_backed *lazy_aux = (struct lazy_aux_file_backed *)aux;
-	// struct file_page *file_page = &page->file; //file_backed에 page 정보를 저장한다
 	struct file *file = lazy_aux->file;
 	size_t read_bytes = lazy_aux->read_bytes;
 	size_t zero_bytes = lazy_aux->zero_bytes;

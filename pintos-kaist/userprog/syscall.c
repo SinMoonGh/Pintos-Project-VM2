@@ -276,6 +276,8 @@ int read(int fd, void *buffer, unsigned size){
 // 5. addr aline인있는 지 c
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) 
 {
+	check_address(addr);
+	
 	struct thread *curr = thread_current();
 	if (addr == NULL || length == 0 || fd == 0 || fd == 1 || (uint64_t) addr % 4096 != 0 || spt_find_page(&curr->spt, addr)) { // 이건 맞다고 가정하고
 		return NULL;
