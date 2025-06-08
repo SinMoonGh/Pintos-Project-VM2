@@ -599,6 +599,9 @@ init_thread (struct thread *t, const char *name, int priority) {
 	sema_init(&t->wait_sema, 0);
 	list_init(&(t->child_list));
 	// ~ project 2. user programs
+#ifdef VM
+	list_init(&t->mmap_list); // feat: do_munmap
+#endif
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should

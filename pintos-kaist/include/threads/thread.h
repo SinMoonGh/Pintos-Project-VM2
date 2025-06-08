@@ -111,8 +111,8 @@ struct thread {
 	/* Table for whole virtual memory owned by thread. */
 	struct supplemental_page_table spt;
 	struct uint64_t *rsp; // HACK: 타입이 적절한가? 사유: rsp는 64바이트 주소. 
+	struct list mmap_list;
 #endif
-
 	/* Owned by thread.c. */
 	struct intr_frame tf;               /* Information for switching */
 	unsigned magic;                     /* Detects stack overflow. */

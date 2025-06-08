@@ -13,10 +13,17 @@ struct file_page {
 };
 
 struct lazy_aux_file_backed {
-	size_t length;
-	int writable;
 	struct file *file;
 	off_t offset;
+	size_t read_bytes;
+	size_t zero_bytes;
+};
+
+struct mmap_file {
+	void *start_addr;
+	size_t start_length;
+	struct file *file;
+	struct list_elem elem;
 };
 
 void vm_file_init (void);

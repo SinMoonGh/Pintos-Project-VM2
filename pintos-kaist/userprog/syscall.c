@@ -12,6 +12,7 @@
 #include "userprog/gdt.h"
 #include "threads/flags.h"
 #include "intrinsic.h"
+#include "vm/vm.h"
 
 void syscall_entry (void);
 void syscall_handler (struct intr_frame *);
@@ -178,7 +179,9 @@ bool remove(const char *file) {
  */
 int open(const char *filename) {
 	check_address(filename); // 이상한 포인터면 즉시 종료
+	dprintfe("[open] check_address 바로 다음 라인\n");
 	struct file *file_obj = filesys_open(filename);
+	dprintfe("[open] filesys_open 바로 다음 라인\n");
 	
 	if (file_obj == NULL) {
 		return -1;
@@ -191,6 +194,7 @@ int open(const char *filename) {
     	file_obj = NULL;
 	}
 	
+	dprintfe("[open] open() 마지막 라인\n");
 	return fd;
 }
 
@@ -273,21 +277,13 @@ int read(int fd, void *buffer, unsigned size){
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) 
 {
 	struct thread *curr = thread_current();
-	if (addr == NULL || length == 0 || fd == 0 || fd == 1 || (uint64_t) addr % 4096 != 0 || spt_find_page(&curr->spt, addr)) {
+	if (addr == NULL || length == 0 || fd == 0 || fd == 1 || (uint64_t) addr % 4096 != 0 || spt_find_page(&curr->spt, addr)) { // 이건 맞다고 가정하고
 		return NULL;
 	}
-	sema_down(&filesys_lock);
-	struct file *file = open(curr->fd_table[fd]); 
-	sema_up(&filesys_lock);
 	
-	void *upage = do_mmap(addr, length, writable, file, offset);
-	
-	sema_down(&filesys_lock);
-	close(fd);
-	sema_up(&filesys_lock);
-	
+	struct file *file = process_get_file_by_fd(fd);
 
-	return upage;
+	return do_mmap(addr, length, writable, file, offset);
 }
 
 void munmap(void *addr){
@@ -380,7 +376,7 @@ void syscall_handler (struct intr_frame *f UNUSED) {
 		case SYS_MUNMAP:
 			munmap(f->R.rdi);
 		default:
-			printf("FATAL: UNDEFINED SYSTEM CALL!, %d", sys_call_number);
+			// printf("FATAL: UNDEFINED SYSTEM CALL!, %d", sys_call_number);
 			exit(-1);
 			break;
 	}
