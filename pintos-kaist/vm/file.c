@@ -97,13 +97,16 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 	// 1-3. 나머자 내용은 0으로 채워야 함.
 	void *start_addr = addr;
 	size_t start_length = length;
+	off_t read_bytes = file_length(file) - offset;
+	off_t zero_bytes = length - read_bytes;
+	// read_bytes와 zero_bytes가 필요하다는 데 왜 필요한지 모르겠다...
 
 	while (length > 0)
 	{
 		struct lazy_aux_file_backed *aux = malloc(sizeof(struct lazy_aux_file_backed));
 		aux->file = file_reopen(file);
 		aux->writable = writable;
-		aux->length = length > PGSIZE ? PGSIZE : length;
+		aux->length = read_bytes < PGSIZE ? read_bytes : PGSIZE;
 		aux->offset = offset;
 
 		if (!vm_alloc_page_with_initializer(VM_FILE, addr, writable, lazy_load_file_backed, aux))
@@ -116,7 +119,7 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 				dprintfg("[do_mmap] vm_dealloc_page() 실행 후\n");
 				addr -= PGSIZE;				
 			}
-			file_close(file);
+			// file_close(file);
 			return NULL;
 		}
 
@@ -143,24 +146,30 @@ bool lazy_load_file_backed(struct page *page, void *aux)
 	/* 이 함수는 주소 VA에서 첫 페이지 폴트가 발생했을 때 호출됩니다. */
 	/* 이 함수를 호출할 때 VA를 사용할 수 있습니다. */
 	dprintfg("[lazy_load_file_backed] routine start. page: %p, page->va: %p\n", page, page->va);
-	void *va = page->va;
-	memset(page->frame->kva, 0, PGSIZE); // zero bytes 복사.
+
+	if (page->frame == NULL || page->frame->kva == NULL){
+    	PANIC("lazy_load_file_backed이 allocate 되어 있지 않습니다!!");
+	}
 
 	/* Load this page. */
-	struct lazy_aux_file_backed *lazy_aux = (struct lazy_aux_file_backed *)aux;
 	// aux 멤버 정의 필요.
 	// file page 업데이트
-	struct file_page *file_page = &page->file; //file_backed에 page 정보를 저장한다
-	file_page->file = lazy_aux->file; // file 정보 저장
-	file_page->file_ofs = lazy_aux->offset; // 
-	file_page->size = lazy_aux->length;
-	
+	struct lazy_aux_file_backed *lazy_aux = (struct lazy_aux_file_backed *)aux;
+	// struct file_page *file_page = &page->file; //file_backed에 page 정보를 저장한다
+	struct file *file = lazy_aux->file;
+	size_t read_bytes = lazy_aux->read_bytes;
+	size_t zero_bytes = lazy_aux->zero_bytes;
+	off_t offset = lazy_aux->offset;
+
 	dprintfg("[lazy_load_file_backed] reading file\n");
-	if (file_read_at(lazy_aux->file, page->frame->kva, lazy_aux->length, lazy_aux->offset) != (int)lazy_aux->length)
+	if (file_read_at(file, page->frame->kva, read_bytes, offset) != read_bytes)
 	{
 		free(lazy_aux);
 		return false;
 	}
+	memset(page->frame->kva + read_bytes, 0, zero_bytes); // zero bytes 복사.
+
+	free(lazy_aux);
 	return true;
 }
 
