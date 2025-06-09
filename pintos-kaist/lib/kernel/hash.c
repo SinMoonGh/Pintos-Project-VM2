@@ -134,7 +134,9 @@ hash_find (struct hash *h, struct hash_elem *e) {
    responsibility to deallocate them. */
 struct hash_elem *
 hash_delete (struct hash *h, struct hash_elem *e) {
+	dprintfg("[hash_delete] hash func addr: %p, less func addr: %p\n", h->hash, h->less);
 	struct hash_elem *found = find_elem (h, find_bucket (h, e), e);
+	dprintfg("[hash_delete] find elem success\n");
 	if (found != NULL) {
 		remove_elem (h, found);
 		rehash (h);
@@ -288,16 +290,16 @@ find_bucket (struct hash *h, struct hash_elem *e) {
 static struct hash_elem *
 find_elem (struct hash *h, struct list *bucket, struct hash_elem *e) {
 	struct list_elem *i;
-	dprintfb("[find_elem] finding hash elem\n");
+	dprintfg("[find_elem] finding hash elem\n");
 
 	for (i = list_begin (bucket); i != list_end (bucket); i = list_next (i)) {
 		struct hash_elem *hi = list_elem_to_hash_elem (i);
 		if (!h->less (hi, e, h->aux) && !h->less (e, hi, h->aux)){
-			dprintfb("[find_elem] hash found. %p\n", hash_entry(hi, struct page, hash_elem));
+			dprintfg("[find_elem] hash found. %p\n", hash_entry(hi, struct page, hash_elem));
 			return hi;
 		}
 	}
-	dprintfb("[find_elem] hash not found\n");
+	dprintfg("[find_elem] hash not found\n");
 	return NULL;
 }
 

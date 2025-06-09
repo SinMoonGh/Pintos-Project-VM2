@@ -43,12 +43,23 @@ void check_address(const uint64_t *addr);
  */
 void check_address(const uint64_t *addr){
 	struct thread *cur = thread_current();
-	dprintfe("[check_address] routine start\n");
-	if (addr == NULL || !(is_user_vaddr(addr)) ||!spt_find_page(&cur->spt, addr)) 
-		exit(-1);
-	if(pml4_get_page(cur->pml4, addr) == NULL) dprintfe("[check_address] addr not in pml4\n");
-	dprintfe("[check_address] check pass!\n");
 
+	if (addr == NULL) {
+		dprintfg("[check_address] NULL address\n");
+		exit(-1);
+	}
+
+	if (!is_user_vaddr(addr)) {
+		dprintfg("[check_address] not a user address\n");
+		exit(-1);
+	}
+	// page가 존재하지 않으면 exit()
+
+	// 실제 물리 매핑 또는 lazy mapping이 하나라도 없으면 실패
+	if (pml4_get_page(cur->pml4, addr) == NULL || spt_find_page(&cur->spt, addr) == NULL) {
+		dprintfg("[check_address] addr not mapped nor in spt\n");
+		exit(-1);
+	}
 }
 
 /**
@@ -275,16 +286,16 @@ int read(int fd, void *buffer, unsigned size){
 // 4. addr의 page에 spt가 없어야 한다?
 // 5. addr aline인있는 지 c
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) 
-{
-	check_address(addr);
-	
+{	
 	struct thread *curr = thread_current();
 	if (addr == NULL || length == 0 || fd == 0 || fd == 1 || (uint64_t) addr % 4096 != 0 || spt_find_page(&curr->spt, addr)) { // 이건 맞다고 가정하고
+		dprintfg("[mmap] if 조건문을 통과하지 못했음...\n");
 		return NULL;
 	}
 	
 	struct file *file = process_get_file_by_fd(fd);
 
+	dprintfg("[mmap] fd로 file 찾고 난 후\n");
 	return do_mmap(addr, length, writable, file, offset);
 }
 

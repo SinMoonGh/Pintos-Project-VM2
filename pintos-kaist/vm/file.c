@@ -33,13 +33,20 @@ bool file_backed_initializer(struct page *page, enum vm_type type, void *kva)
 	// - 해당 페이지가 참조할 파일 등의 정보도 설정 필요
 
 	/* Set up the handler */
+	struct uninit_page *uninit = &page->uninit;
+	void *aux = uninit->aux;
+
 	page->operations = &file_ops;
 
+	struct lazy_aux_file_backed *lazy_aux = (struct lazy_aux_file_backed *)aux;
 	struct file_page *file_page = &page->file;
+	
 	// file_page 멤버 초기화.
-	file_page->file = NULL;
-	file_page->file_ofs  = 0;
-	file_page->size = 0;
+	file_page->file = lazy_aux->file;
+	file_page->size = lazy_aux->read_bytes;
+	file_page->file_ofs  = lazy_aux->offset;
+
+	return true;
 }
 
 /* Swap in the page by read contents from the file. */
@@ -82,9 +89,8 @@ file_backed_destroy(struct page *page)
 			file_write_at(file_page->file, page->va, file_page->size, file_page->file_ofs); // Writes SIZE bytes만큼 쓴다.
 		}
 		file_close(file_page->file);
-		dprintfg("[file_backed_destroy] spt remove page()할 때 문제가 발생한 것 같아\n");
-		// spt_remove_page(spt, page); // spt 제거 -> spt에서 지우면 pml4에서 계속 업데이트가 된다?
 	}	
+	dprintfg("[file_backed_destroy] spt find page() 진입하지 못함.\n");
 }
 
 /* Do the mmap */
@@ -115,9 +121,11 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 		aux->zero_bytes = zero_bytes;
 		aux->offset = offset;
 
+		dprintfg("[do_mmap] vm_alloc_page_with_initializer()실행하기 전. 만약 이 다음에 exit()된다면 이 함수에서 문제가 발생한 것임\n");
 		if (!vm_alloc_page_with_initializer(VM_FILE, addr, writable, lazy_load_file_backed, aux))
 		{
 			// page clean??
+			dprintfg("[do_mmap] vm_alloc_page_with_initializer() 실패했나요??\n");
 			free(aux);
 			while(start_addr < addr){
 				dprintfg("[do_mmap] vm_dealloc_page() 실행 전\n");
@@ -139,7 +147,7 @@ do_mmap(void *addr, size_t length, int writable, struct file *file, off_t offset
 	struct mmap_file *mmap_file = malloc(sizeof(struct mmap_file));
 	mmap_file->start_addr = start_addr;
 	mmap_file->start_length = start_length;
-	mmap_file->file = file;
+	mmap_file->file = file_reopen(file);
 	dprintfg("[do_mmap] list_push_back() 이전\n");
 	list_push_back(&thread_current()->mmap_list, &mmap_file->elem);
 	dprintfg("[do_mmap] list_push_back() 이후\n");
@@ -190,19 +198,38 @@ void do_munmap(void *addr)
 	// 한 파일을 여러번 mmap하는 경우에는 file_reopen을 통해 독립된 참조. -> 하나의 file이 여러번 mmap 되어 있는 걸 어떻게 알지?
 	struct thread *curr = thread_current();
 	struct supplemental_page_table *spt = &curr->spt; // 현재 스레드의 spt 정보 참조
-	dprintfg("[do_munmap] for()문 진입 전인데 이걸 출력하는 이유는 for()에서 문제가 생겼을 것 같아서\n");
 
 	for(struct list_elem *e = list_begin(&curr->mmap_list); e != list_end(&curr->mmap_list); e = list_next(e)){
-		dprintfg("[do_munmap] e값을 출력합니다 %p\n", e);
 		struct mmap_file *mmap_file = list_entry(e, struct mmap_file, elem);
+		void *unmap_addr = mmap_file->start_addr;
+		size_t length = mmap_file->start_length;
+
 		if(mmap_file->start_addr == addr){
-			while(mmap_file->start_length > 0){
-				struct page *page = spt_find_page(spt, mmap_file->start_addr); // spt정보를 가져온다.
-				dprintfg("[do_munmap] file_backed_destroy() 실행 전\n");
-				file_backed_destroy(page);
-				mmap_file->start_addr += PGSIZE;
-				mmap_file->start_length -= PGSIZE;
+			dprintfg("[do_mmap] start_addr : %p, addr : %p\n", mmap_file->start_addr, addr);
+
+			while(length > 0){
+				dprintfg("[do_mmap] while() 안의 length : %d\n", length);
+				struct page *page = spt_find_page(spt, unmap_addr); // spt정보를 가져온다.
+				dprintfg("[do_mmap] spt find page : %p\n", page);
+
+				// spt remove page debug log
+				if (page == NULL) {
+					dprintfg("[do_munmap] spt_find_page() 결과 NULL! 잘못된 주소일 가능성\n");
+					break;
+				}
+				dprintfg("[debug] page: %p, &page->hash_elem: %p, page->va: %p\n", page, &page->hash_elem, page->va);
+
+				dprintfg("[debug] hash_elem addr: %p, 예상 page addr: %p\n", &page->hash_elem, hash_entry(&page->hash_elem, struct page, hash_elem));
+
+				// spt remove page start
+				spt_remove_page(spt, page);
+				dprintfg("[do_munmap] spt remove() 실행 후 다음 line으로 넘어가나요??\n");
+				unmap_addr += PGSIZE;
+    			length -= PGSIZE; 
 			}
+
+			list_remove(&mmap_file->elem);
+			free(mmap_file);
 		}
 	}
 }

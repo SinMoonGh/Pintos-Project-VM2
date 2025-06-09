@@ -149,12 +149,12 @@ spt_find_page(struct supplemental_page_table *spt, void *va)
 
 	if (e != NULL)
 	{
-		dprintfa("[spt_find_page] search success.\n");
+		dprintfg("[spt_find_page] search success.\n");
 		return hash_entry(e, struct page, hash_elem);
 	}
 	else
 	{
-		dprintfa("[spt_find_page] search failed.\n");
+		dprintfg("[spt_find_page] search failed.\n");
 		return NULL;
 	}
 }
