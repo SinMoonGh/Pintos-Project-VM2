@@ -9,7 +9,7 @@
 static bool file_backed_swap_in(struct page *page, void *kva);
 static bool file_backed_swap_out(struct page *page);
 static void file_backed_destroy(struct page *page);
-boollazy_load_file_backed(struct page *page, void *aux);
+bool lazy_load_file_backed(struct page *page, void *aux);
 /* DO NOT MODIFY this struct */
 static const struct page_operations file_ops = {
 	.swap_in = file_backed_swap_in,
@@ -199,10 +199,12 @@ void do_munmap(void *addr)
 	struct thread *curr = thread_current();
 	struct supplemental_page_table *spt = &curr->spt; // 현재 스레드의 spt 정보 참조
 
-	for(struct list_elem *e = list_begin(&curr->mmap_list); e != list_end(&curr->mmap_list); e = list_next(e)){
-		struct mmap_file *mmap_file = list_entry(e, struct mmap_file, elem);
-		void *unmap_addr = mmap_file->start_addr;
-		size_t length = mmap_file->start_length;
+    struct list_elem *e = list_begin(&curr->mmap_list);
+    while (e != list_end(&curr->mmap_list)) {
+            struct list_elem *next = list_next(e);
+            struct mmap_file *mmap_file = list_entry(e, struct mmap_file, elem);
+            void *unmap_addr = mmap_file->start_addr;
+            size_t length = mmap_file->start_length;
 
 		if(mmap_file->start_addr == addr){
 			dprintfg("[do_mmap] start_addr : %p, addr : %p\n", mmap_file->start_addr, addr);
@@ -228,8 +230,9 @@ void do_munmap(void *addr)
     			length -= PGSIZE; 
 			}
 
-			list_remove(&mmap_file->elem);
-			free(mmap_file);
-		}
-	}
+                        list_remove(&mmap_file->elem);
+                        free(mmap_file);
+                }
+            e = next;
+    }
 }
