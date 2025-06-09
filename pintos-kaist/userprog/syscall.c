@@ -41,13 +41,21 @@ void check_address(const uint64_t *addr);
  * @param addr: 주소값.
  */
 void check_address(const uint64_t *addr){
-	struct thread *cur = thread_current();
-	dprintfe("[check_address] routine start\n");
-	if (addr == NULL || !(is_user_vaddr(addr)) ||!spt_find_page(&cur->spt, addr)) 
+	dprintfg("[check_address] routine start: %p\n", addr); 
+	if (addr == NULL || !(is_user_vaddr(addr))) {
+		dprintfg("[check_address] check failed!\n");
 		exit(-1);
-	if(pml4_get_page(cur->pml4, addr) == NULL) dprintfe("[check_address] addr not in pml4\n");
-	dprintfe("[check_address] check pass!\n");
+	}
+	dprintfg("[check_address] check pass!\n");
+}
 
+void check_address_writable(const uint64_t *addr)
+{
+	struct page *page = spt_find_page(&thread_current()->spt, addr);
+	if (page != NULL && !page->writable)
+	{
+		exit(-1);
+	}
 }
 
 /**
@@ -71,7 +79,9 @@ void seek(int fd, unsigned position) {
 	struct file *file = process_get_file_by_fd(fd);
 	if (file == NULL)
 		return;
+	lock_acquire(&filesys_lock);
 	file_seek(file, position);
+	lock_release(&filesys_lock);
 }
 
 /**
@@ -156,7 +166,10 @@ int exec(char *file_name) {
  */
 bool create(const char *file, unsigned initial_size) {		
 	check_address(file);
-	return filesys_create(file, initial_size);
+	lock_acquire(&filesys_lock);
+	bool result = filesys_create(file, initial_size);
+	lock_release(&filesys_lock);
+	return result;
 }
 
 /**
@@ -167,7 +180,10 @@ bool create(const char *file, unsigned initial_size) {
  */
 bool remove(const char *file) {	
 	check_address(file);
-	return filesys_remove(file);
+	lock_acquire(&filesys_lock);
+	bool result = filesys_remove(file);
+	lock_release(&filesys_lock);
+	return result;
 }
 
 /**
@@ -177,7 +193,9 @@ bool remove(const char *file) {
  * @param file: 오픈할 파일.
  */
 int open(const char *filename) {
+	dprintfg("[open] routine start. filename: %p\n", filename);
 	check_address(filename); // 이상한 포인터면 즉시 종료
+	dprintfg("[open] validation complete\n");
 	struct file *file_obj = filesys_open(filename);
 	
 	if (file_obj == NULL) {
@@ -185,11 +203,16 @@ int open(const char *filename) {
 	}
 
 	int fd = process_add_file(file_obj);
+	dprintfg("[open] process add file done\n");
 
 	if (fd == -1) { // fd table 꽉찬 경우 그냥 닫아버림
+		dprintfg("[open] failed\n");
+		lock_acquire(&filesys_lock);
 		file_close(file_obj);
+		lock_release(&filesys_lock);
     	file_obj = NULL;
 	}
+	dprintfg("[open] success. returnin fd: %d\n", fd);
 	
 	return fd;
 }
@@ -201,10 +224,13 @@ int open(const char *filename) {
  * @param file: 닫을 파일.
  */
 void close(int fd){
+	dprintfg("[close] routine start. fd: %d\n", fd);
 	struct file *file_obj = process_get_file_by_fd(fd);
 	if (file_obj == NULL)
 		return;
+	lock_acquire(&filesys_lock);
 	file_close(file_obj);
+	lock_release(&filesys_lock);
 	process_close_file_by_id(fd);
 }
 
@@ -219,7 +245,10 @@ int filesize(int fd) {
 	if (open_file == NULL) {
 		return -1;
 	}
-	return file_length(open_file);
+	lock_acquire(&filesys_lock);
+	int result = file_length(open_file);
+	lock_release(&filesys_lock);
+	return result;
 }
 
 /**
@@ -232,14 +261,21 @@ int filesize(int fd) {
  */
 int read(int fd, void *buffer, unsigned size){
 	// 1. 주소 범위 검증
-	dprintfe("[read] routine start. \n");
+	dprintfg("[read] routine start. buffer: %p\n", buffer);
 	check_address(buffer);
-    check_address(buffer + size-1); 
+    // check_address(buffer + size-1); 
+	dprintfg("[read] pivot -1\n");
+	// if(spt_find_page(&thread_current()->spt, buffer) != NULL && !(spt_find_page(&thread_current()->spt, buffer)->writable)) // DEBUG: 중복
+	// {
+	// 	exit(-1);
+	// }
+	dprintfg("[read] pivot 0\n");
     if (size == 0)
         return 0;
     if (buffer == NULL || !is_user_vaddr(buffer))
         exit(-1);
 
+	dprintfg("[read] pivot 1\n");
     // 2. stdin (fd == 0)일 경우
     if (fd == STDIN_FILENO) {
         unsigned i;
@@ -248,15 +284,18 @@ int read(int fd, void *buffer, unsigned size){
             buf[i] = input_getc();
         return i;
     }
+	dprintfg("[read] pivot 2\n");
 
     // 3. fd 범위 검사
     if (fd < 2 || fd >= FDCOUNT_LIMIT)
         return -1;
 
     struct file *file = process_get_file_by_fd(fd);
+	check_address_writable(buffer);
     if (file == NULL)
         return -1; // 해당 파일이 NULL이면 즉시 리턴.
 
+	dprintfg("[read] pivot 3\n");
     // 4. 정상적인 파일이면 read
     off_t ret;
     lock_acquire(&filesys_lock);
@@ -272,26 +311,29 @@ int read(int fd, void *buffer, unsigned size){
 // 5. addr aline인있는 지 c
 void *mmap (void *addr, size_t length, int writable, int fd, off_t offset) 
 {
+	dprintfg("[mmap] routine start\n");
 	struct thread *curr = thread_current();
+
 	if (addr == NULL || length == 0 || fd == 0 || fd == 1 || (uint64_t) addr % 4096 != 0 || spt_find_page(&curr->spt, addr)) {
 		return NULL;
 	}
-	sema_down(&filesys_lock);
-	struct file *file = open(curr->fd_table[fd]); 
-	sema_up(&filesys_lock);
-	
-	void *upage = do_mmap(addr, length, writable, file, offset);
-	
-	sema_down(&filesys_lock);
-	close(fd);
-	sema_up(&filesys_lock);
-	
 
+	struct file *file = process_get_file_by_fd(fd);
+
+	dprintfg("[mmap] running do_mmap\n");
+	// sema_down(&filesys_lock);
+	void *upage = do_mmap(addr, length, writable, file, offset);
+	// sema_up(&filesys_lock);
+
+	dprintfg("[mmap] mmap complete.\n");
+	
 	return upage;
 }
 
 void munmap(void *addr){
+
 	do_munmap(addr);
+
 }
 
 
@@ -312,7 +354,7 @@ void syscall_init (void) {
 /* The main system call interface */
 void syscall_handler (struct intr_frame *f UNUSED) {
 	int sys_call_number = (int) f->R.rax; // 시스템 콜 번호 받아옴
-
+	thread_current()->rsp = f->rsp;
 	/*
 	 x86-64 규약은 함수가 리턴하는 값을 "rax 레지스터"에 담음. 다른 인자들은 rdi, rsi 등 다른 레지스터로 전달.
 	 시스템 콜들 중 값 반환이 필요한 것은, struct intr_frame의 rax 멤버 수정을 통해 구현
@@ -348,7 +390,7 @@ void syscall_handler (struct intr_frame *f UNUSED) {
 			break;
 		case SYS_OPEN:
 			// printf("SYS_OPEN [%d]", sys_call_number);
-    		f->R.rax = open((const char *)f->R.rdi);
+    		f->R.rax = open(f->R.rdi);
 			break;
 		case SYS_FILESIZE:
 			// printf("SYS_FILESIZE [%d]", sys_call_number);
@@ -379,6 +421,7 @@ void syscall_handler (struct intr_frame *f UNUSED) {
 			break;
 		case SYS_MUNMAP:
 			munmap(f->R.rdi);
+			break;
 		default:
 			printf("FATAL: UNDEFINED SYSTEM CALL!, %d", sys_call_number);
 			exit(-1);

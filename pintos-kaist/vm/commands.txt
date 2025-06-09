@@ -1,149 +1,3 @@
-make[1]: Entering directory '/workspaces/JUNGLE-Pintos-VM2/pintos-kaist/vm/build'
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-none:args-none --swap-disk=4 -- -q   -f run args-none 
-perl -I../.. ../../tests/userprog/args-none.ck tests/userprog/args-none tests/userprog/args-none.result
-pass tests/userprog/args-none
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-single:args-single --swap-disk=4 -- -q   -f run 'args-single onearg' 
-perl -I../.. ../../tests/userprog/args-single.ck tests/userprog/args-single tests/userprog/args-single.result
-pass tests/userprog/args-single
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-multiple:args-multiple --swap-disk=4 -- -q   -f run 'args-multiple some arguments for you!' 
-perl -I../.. ../../tests/userprog/args-multiple.ck tests/userprog/args-multiple tests/userprog/args-multiple.result
-pass tests/userprog/args-multiple
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-many:args-many --swap-disk=4 -- -q   -f run 'args-many a b c d e f g h i j k l m n o p q r s t u v' 
-perl -I../.. ../../tests/userprog/args-many.ck tests/userprog/args-many tests/userprog/args-many.result
-pass tests/userprog/args-many
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/args-dbl-space:args-dbl-space --swap-disk=4 -- -q   -f run 'args-dbl-space two  spaces!' 
-perl -I../.. ../../tests/userprog/args-dbl-space.ck tests/userprog/args-dbl-space tests/userprog/args-dbl-space.result
-pass tests/userprog/args-dbl-space
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/halt:halt --swap-disk=4 -- -q   -f run halt 
-perl -I../.. ../../tests/userprog/halt.ck tests/userprog/halt tests/userprog/halt.result
-pass tests/userprog/halt
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exit:exit --swap-disk=4 -- -q   -f run exit 
-perl -I../.. ../../tests/userprog/exit.ck tests/userprog/exit tests/userprog/exit.result
-pass tests/userprog/exit
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-normal:create-normal --swap-disk=4 -- -q   -f run create-normal 
-perl -I../.. ../../tests/userprog/create-normal.ck tests/userprog/create-normal tests/userprog/create-normal.result
-pass tests/userprog/create-normal
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-empty:create-empty --swap-disk=4 -- -q   -f run create-empty 
-perl -I../.. ../../tests/userprog/create-empty.ck tests/userprog/create-empty tests/userprog/create-empty.result
-pass tests/userprog/create-empty
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-null:create-null --swap-disk=4 -- -q   -f run create-null 
-perl -I../.. ../../tests/userprog/create-null.ck tests/userprog/create-null tests/userprog/create-null.result
-pass tests/userprog/create-null
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-bad-ptr:create-bad-ptr --swap-disk=4 -- -q   -f run create-bad-ptr 
-perl -I../.. ../../tests/userprog/create-bad-ptr.ck tests/userprog/create-bad-ptr tests/userprog/create-bad-ptr.result
-pass tests/userprog/create-bad-ptr
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-long:create-long --swap-disk=4 -- -q   -f run create-long 
-perl -I../.. ../../tests/userprog/create-long.ck tests/userprog/create-long tests/userprog/create-long.result
-pass tests/userprog/create-long
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-exists:create-exists --swap-disk=4 -- -q   -f run create-exists 
-perl -I../.. ../../tests/userprog/create-exists.ck tests/userprog/create-exists tests/userprog/create-exists.result
-pass tests/userprog/create-exists
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/create-bound:create-bound --swap-disk=4 -- -q   -f run create-bound 
-perl -I../.. ../../tests/userprog/create-bound.ck tests/userprog/create-bound tests/userprog/create-bound.result
-pass tests/userprog/create-bound
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-normal:open-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-normal 
-perl -I../.. ../../tests/userprog/open-normal.ck tests/userprog/open-normal tests/userprog/open-normal.result
-pass tests/userprog/open-normal
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-missing:open-missing --swap-disk=4 -- -q   -f run open-missing 
-perl -I../.. ../../tests/userprog/open-missing.ck tests/userprog/open-missing tests/userprog/open-missing.result
-pass tests/userprog/open-missing
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-boundary:open-boundary -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-boundary 
-perl -I../.. ../../tests/userprog/open-boundary.ck tests/userprog/open-boundary tests/userprog/open-boundary.result
-pass tests/userprog/open-boundary
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-empty:open-empty --swap-disk=4 -- -q   -f run open-empty 
-perl -I../.. ../../tests/userprog/open-empty.ck tests/userprog/open-empty tests/userprog/open-empty.result
-pass tests/userprog/open-empty
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-null:open-null --swap-disk=4 -- -q   -f run open-null 
-perl -I../.. ../../tests/userprog/open-null.ck tests/userprog/open-null tests/userprog/open-null.result
-pass tests/userprog/open-null
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-bad-ptr:open-bad-ptr --swap-disk=4 -- -q   -f run open-bad-ptr 
-perl -I../.. ../../tests/userprog/open-bad-ptr.ck tests/userprog/open-bad-ptr tests/userprog/open-bad-ptr.result
-pass tests/userprog/open-bad-ptr
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/open-twice:open-twice -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run open-twice 
-perl -I../.. ../../tests/userprog/open-twice.ck tests/userprog/open-twice tests/userprog/open-twice.result
-pass tests/userprog/open-twice
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/close-normal:close-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run close-normal 
-perl -I../.. ../../tests/userprog/close-normal.ck tests/userprog/close-normal tests/userprog/close-normal.result
-pass tests/userprog/close-normal
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/close-twice:close-twice -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run close-twice 
-perl -I../.. ../../tests/userprog/close-twice.ck tests/userprog/close-twice tests/userprog/close-twice.result
-pass tests/userprog/close-twice
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/close-bad-fd:close-bad-fd --swap-disk=4 -- -q   -f run close-bad-fd 
-perl -I../.. ../../tests/userprog/close-bad-fd.ck tests/userprog/close-bad-fd tests/userprog/close-bad-fd.result
-pass tests/userprog/close-bad-fd
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-normal:read-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-normal 
-perl -I../.. ../../tests/userprog/read-normal.ck tests/userprog/read-normal tests/userprog/read-normal.result
-pass tests/userprog/read-normal
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-bad-ptr:read-bad-ptr -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-bad-ptr 
-perl -I../.. ../../tests/userprog/read-bad-ptr.ck tests/userprog/read-bad-ptr tests/userprog/read-bad-ptr.result
-pass tests/userprog/read-bad-ptr
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-boundary:read-boundary -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-boundary 
-perl -I../.. ../../tests/userprog/read-boundary.ck tests/userprog/read-boundary tests/userprog/read-boundary.result
-pass tests/userprog/read-boundary
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-zero:read-zero -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run read-zero 
-perl -I../.. ../../tests/userprog/read-zero.ck tests/userprog/read-zero tests/userprog/read-zero.result
-pass tests/userprog/read-zero
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-stdout:read-stdout --swap-disk=4 -- -q   -f run read-stdout 
-perl -I../.. ../../tests/userprog/read-stdout.ck tests/userprog/read-stdout tests/userprog/read-stdout.result
-pass tests/userprog/read-stdout
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/read-bad-fd:read-bad-fd --swap-disk=4 -- -q   -f run read-bad-fd 
-perl -I../.. ../../tests/userprog/read-bad-fd.ck tests/userprog/read-bad-fd tests/userprog/read-bad-fd.result
-pass tests/userprog/read-bad-fd
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-normal:write-normal -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-normal 
-perl -I../.. ../../tests/userprog/write-normal.ck tests/userprog/write-normal tests/userprog/write-normal.result
-pass tests/userprog/write-normal
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-bad-ptr:write-bad-ptr -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-bad-ptr 
-perl -I../.. ../../tests/userprog/write-bad-ptr.ck tests/userprog/write-bad-ptr tests/userprog/write-bad-ptr.result
-FAIL tests/userprog/write-bad-ptr
-Kernel panic in run: PANIC at ../../threads/synch.c:263 in lock_acquire(): assertion `!lock_held_by_current_thread (lock)' failed.
-Call stack: 0x800421802a 0x800420a5c0 0x800421d3c1 0x800421c036 0x8004207240 0x800421d022 0x800421ce03 0x800420900d 0x800420942b 0x80042201c8 0x800421eff4 0x800421d0d8 0x800421d9a8 0x800421ce78 0x400160 0x4001d6 0x400c77
-Translation of call stack:
-0x000000800421802a: debug_panic (lib/kernel/debug.c:32)
-0x000000800420a5c0: lock_acquire (threads/synch.c:267)
-0x000000800421d3c1: close (userprog/syscall.c:232)
-0x000000800421c036: process_exit (userprog/process.c:432 (discriminator 2))
-0x0000008004207240: thread_exit (threads/thread.c:328)
-0x000000800421d022: write (userprog/syscall.c:107)
-0x000000800421ce03: page_fault (userprog/exception.c:152)
-0x000000800420900d: intr_handler (threads/interrupt.c:352)
-0x000000800420942b: intr_entry (threads/intr-stubs.o:?)
-0x00000080042201c8: inode_write_at (filesys/inode.c:277)
-0x000000800421eff4: file_write (filesys/file.c:107)
-0x000000800421d0d8: write (userprog/syscall.c:120)
-0x000000800421d9a8: syscall_handler (userprog/syscall.c:397)
-0x000000800421ce78: no_sti (userprog/syscall-entry.o:?)
-0x0000000000400160: (unknown)
-0x00000000004001d6: (unknown)
-0x0000000000400c77: (unknown)
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-boundary:write-boundary -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-boundary 
-perl -I../.. ../../tests/userprog/write-boundary.ck tests/userprog/write-boundary tests/userprog/write-boundary.result
-pass tests/userprog/write-boundary
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-zero:write-zero -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run write-zero 
-perl -I../.. ../../tests/userprog/write-zero.ck tests/userprog/write-zero tests/userprog/write-zero.result
-pass tests/userprog/write-zero
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-stdin:write-stdin --swap-disk=4 -- -q   -f run write-stdin 
-perl -I../.. ../../tests/userprog/write-stdin.ck tests/userprog/write-stdin tests/userprog/write-stdin.result
-pass tests/userprog/write-stdin
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/write-bad-fd:write-bad-fd --swap-disk=4 -- -q   -f run write-bad-fd 
-perl -I../.. ../../tests/userprog/write-bad-fd.ck tests/userprog/write-bad-fd tests/userprog/write-bad-fd.result
-pass tests/userprog/write-bad-fd
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-once:fork-once --swap-disk=4 -- -q   -f run fork-once 
-perl -I../.. ../../tests/userprog/fork-once.ck tests/userprog/fork-once tests/userprog/fork-once.result
-pass tests/userprog/fork-once
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-multiple:fork-multiple --swap-disk=4 -- -q   -f run fork-multiple 
-perl -I../.. ../../tests/userprog/fork-multiple.ck tests/userprog/fork-multiple tests/userprog/fork-multiple.result
-pass tests/userprog/fork-multiple
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-recursive:fork-recursive --swap-disk=4 -- -q   -f run fork-recursive 
-perl -I../.. ../../tests/userprog/fork-recursive.ck tests/userprog/fork-recursive tests/userprog/fork-recursive.result
-pass tests/userprog/fork-recursive
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-read:fork-read -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run fork-read 
-perl -I../.. ../../tests/userprog/fork-read.ck tests/userprog/fork-read tests/userprog/fork-read.result
-pass tests/userprog/fork-read
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-close:fork-close -p ../../tests/userprog/sample.txt:sample.txt --swap-disk=4 -- -q   -f run fork-close 
-perl -I../.. ../../tests/userprog/fork-close.ck tests/userprog/fork-close tests/userprog/fork-close.result
-pass tests/userprog/fork-close
-pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/fork-boundary:fork-boundary --swap-disk=4 -- -q   -f run fork-boundary 
-perl -I../.. ../../tests/userprog/fork-boundary.ck tests/userprog/fork-boundary tests/userprog/fork-boundary.result
 pass tests/userprog/fork-boundary
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/userprog/exec-once:exec-once -p tests/userprog/child-simple:child-simple --swap-disk=4 -- -q   -f run exec-once 
 perl -I../.. ../../tests/userprog/exec-once.ck tests/userprog/exec-once tests/userprog/exec-once.result
@@ -265,59 +119,262 @@ perl -I../.. ../../tests/vm/page-merge-seq.ck tests/vm/page-merge-seq tests/vm/p
 pass tests/vm/page-merge-seq
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-merge-par:page-merge-par -p tests/vm/child-sort:child-sort --swap-disk=10 -- -q   -f run page-merge-par 
 perl -I../.. ../../tests/vm/page-merge-par.ck tests/vm/page-merge-par tests/vm/page-merge-par.result
-FAIL tests/vm/page-merge-par
-run: open "buf0": FAILED
+pass tests/vm/page-merge-par
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-stk:page-merge-stk -p tests/vm/child-qsort:child-qsort --swap-disk=10 -- -q   -f run page-merge-stk 
 perl -I../.. ../../tests/vm/page-merge-stk.ck tests/vm/page-merge-stk tests/vm/page-merge-stk.result
 FAIL tests/vm/page-merge-stk
-run: open "buf0": FAILED
+run: TIMEOUT
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/page-merge-mm:page-merge-mm -p tests/vm/child-qsort-mm:child-qsort-mm --swap-disk=10 -- -q   -f run page-merge-mm 
 perl -I../.. ../../tests/vm/page-merge-mm.ck tests/vm/page-merge-mm tests/vm/page-merge-mm.result
 FAIL tests/vm/page-merge-mm
-run: open "buf0": FAILED
+run: wait for child 0: FAILED
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/page-shuffle:page-shuffle --swap-disk=4 -- -q   -f run page-shuffle 
 perl -I../.. ../../tests/vm/page-shuffle.ck tests/vm/page-shuffle tests/vm/page-shuffle.result
 pass tests/vm/page-shuffle
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-read:mmap-read -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-read 
 perl -I../.. ../../tests/vm/mmap-read.ck tests/vm/mmap-read tests/vm/mmap-read.result
-pass tests/vm/mmap-read
+FAIL tests/vm/mmap-read
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-read) begin
+  (mmap-read) open "sample.txt"
+  (mmap-read) mmap "sample.txt"
+  (mmap-read) end
+Differences in `diff -u' format:
+  (mmap-read) begin
+  (mmap-read) open "sample.txt"
+  (mmap-read) mmap "sample.txt"
+- (mmap-read) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-close:mmap-close -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-close 
 perl -I../.. ../../tests/vm/mmap-close.ck tests/vm/mmap-close tests/vm/mmap-close.result
-pass tests/vm/mmap-close
+FAIL tests/vm/mmap-close
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-close) begin
+  (mmap-close) open "sample.txt"
+  (mmap-close) mmap "sample.txt"
+  (mmap-close) end
+Differences in `diff -u' format:
+  (mmap-close) begin
+  (mmap-close) open "sample.txt"
+  (mmap-close) mmap "sample.txt"
+- (mmap-close) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-unmap:mmap-unmap -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-unmap 
 perl -I../.. ../../tests/vm/mmap-unmap.ck tests/vm/mmap-unmap tests/vm/mmap-unmap.result
-pass tests/vm/mmap-unmap
+FAIL tests/vm/mmap-unmap
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-unmap) begin
+  (mmap-unmap) open "sample.txt"
+  (mmap-unmap) mmap "sample.txt"
+  (mmap-unmap) memory is readable 540884285
+  (mmap-unmap) memory is readable 540888381
+  mmap-unmap: exit(-1)
+Differences in `diff -u' format:
+  (mmap-unmap) begin
+  (mmap-unmap) open "sample.txt"
+  (mmap-unmap) mmap "sample.txt"
+- (mmap-unmap) memory is readable 540884285
+- (mmap-unmap) memory is readable 540888381
+  mmap-unmap: exit(-1)
 dd if=/dev/zero of=tests/vm/zeros bs=1024 count=6
 6+0 records in
 6+0 records out
-6144 bytes (6.1 kB, 6.0 KiB) copied, 0.00473558 s, 1.3 MB/s
+6144 bytes (6.1 kB, 6.0 KiB) copied, 0.00470942 s, 1.3 MB/s
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-overlap:mmap-overlap -p tests/vm/zeros:zeros --swap-disk=4 -- -q   -f run mmap-overlap 
 perl -I../.. ../../tests/vm/mmap-overlap.ck tests/vm/mmap-overlap tests/vm/mmap-overlap.result
-pass tests/vm/mmap-overlap
+FAIL tests/vm/mmap-overlap
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-overlap) begin
+  (mmap-overlap) open "zeros" once
+  (mmap-overlap) mmap "zeros"
+  (mmap-overlap) open "zeros" again
+  (mmap-overlap) try to mmap "zeros" again
+  (mmap-overlap) end
+Differences in `diff -u' format:
+  (mmap-overlap) begin
+  (mmap-overlap) open "zeros" once
+  (mmap-overlap) mmap "zeros"
+- (mmap-overlap) open "zeros" again
+- (mmap-overlap) try to mmap "zeros" again
+- (mmap-overlap) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-twice:mmap-twice -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-twice 
 perl -I../.. ../../tests/vm/mmap-twice.ck tests/vm/mmap-twice tests/vm/mmap-twice.result
-pass tests/vm/mmap-twice
+FAIL tests/vm/mmap-twice
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-twice) begin
+  (mmap-twice) open "sample.txt" #0
+  (mmap-twice) mmap "sample.txt" #0 at 0x10000000
+  (mmap-twice) open "sample.txt" #1
+  (mmap-twice) mmap "sample.txt" #1 at 0x20000000
+  (mmap-twice) compare mmap'd file 0 against data
+  (mmap-twice) compare mmap'd file 1 against data
+  (mmap-twice) end
+Differences in `diff -u' format:
+  (mmap-twice) begin
+  (mmap-twice) open "sample.txt" #0
+  (mmap-twice) mmap "sample.txt" #0 at 0x10000000
+- (mmap-twice) open "sample.txt" #1
+- (mmap-twice) mmap "sample.txt" #1 at 0x20000000
+- (mmap-twice) compare mmap'd file 0 against data
+- (mmap-twice) compare mmap'd file 1 against data
+- (mmap-twice) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-write:mmap-write --swap-disk=4 -- -q   -f run mmap-write 
 perl -I../.. ../../tests/vm/mmap-write.ck tests/vm/mmap-write tests/vm/mmap-write.result
-pass tests/vm/mmap-write
+FAIL tests/vm/mmap-write
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-write) begin
+  (mmap-write) create "sample.txt"
+  (mmap-write) open "sample.txt"
+  (mmap-write) mmap "sample.txt"
+  (mmap-write) compare read data against written data
+  (mmap-write) end
+Differences in `diff -u' format:
+  (mmap-write) begin
+  (mmap-write) create "sample.txt"
+  (mmap-write) open "sample.txt"
+  (mmap-write) mmap "sample.txt"
+- (mmap-write) compare read data against written data
+- (mmap-write) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-ro:mmap-ro -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-ro 
 perl -I../.. ../../tests/vm/mmap-ro.ck tests/vm/mmap-ro tests/vm/mmap-ro.result
-pass tests/vm/mmap-ro
+FAIL tests/vm/mmap-ro
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-ro) begin
+  (mmap-ro) open "large.txt"
+  (mmap-ro) mmap "large.txt" with writable=0
+  (mmap-ro) about to write into read-only mmap'd memory
+Differences in `diff -u' format:
+  (mmap-ro) begin
+  (mmap-ro) open "large.txt"
+  (mmap-ro) mmap "large.txt" with writable=0
+- (mmap-ro) about to write into read-only mmap'd memory
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-exit:mmap-exit -p tests/vm/child-mm-wrt:child-mm-wrt --swap-disk=4 -- -q   -f run mmap-exit 
 perl -I../.. ../../tests/vm/mmap-exit.ck tests/vm/mmap-exit tests/vm/mmap-exit.result
-pass tests/vm/mmap-exit
+FAIL tests/vm/mmap-exit
+run: wait for child (should return 0): FAILED
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/mmap-shuffle:mmap-shuffle --swap-disk=4 -- -q   -f run mmap-shuffle 
 perl -I../.. ../../tests/vm/mmap-shuffle.ck tests/vm/mmap-shuffle tests/vm/mmap-shuffle.result
-pass tests/vm/mmap-shuffle
+FAIL tests/vm/mmap-shuffle
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-shuffle) begin
+  (mmap-shuffle) create "buffer"
+  (mmap-shuffle) open "buffer"
+  (mmap-shuffle) mmap "buffer"
+  (mmap-shuffle) init: cksum=3115322833
+  (mmap-shuffle) shuffle 0: cksum=2274652418
+  (mmap-shuffle) shuffle 1: cksum=2281360714
+  (mmap-shuffle) shuffle 2: cksum=3504443700
+  (mmap-shuffle) shuffle 3: cksum=2850516818
+  (mmap-shuffle) shuffle 4: cksum=2406916757
+  (mmap-shuffle) shuffle 5: cksum=3377643430
+  (mmap-shuffle) shuffle 6: cksum=658047850
+  (mmap-shuffle) shuffle 7: cksum=493716582
+  (mmap-shuffle) shuffle 8: cksum=3359519593
+  (mmap-shuffle) shuffle 9: cksum=143675990
+  (mmap-shuffle) end
+Differences in `diff -u' format:
+  (mmap-shuffle) begin
+  (mmap-shuffle) create "buffer"
+  (mmap-shuffle) open "buffer"
+  (mmap-shuffle) mmap "buffer"
+- (mmap-shuffle) init: cksum=3115322833
+- (mmap-shuffle) shuffle 0: cksum=2274652418
+- (mmap-shuffle) shuffle 1: cksum=2281360714
+- (mmap-shuffle) shuffle 2: cksum=3504443700
+- (mmap-shuffle) shuffle 3: cksum=2850516818
+- (mmap-shuffle) shuffle 4: cksum=2406916757
+- (mmap-shuffle) shuffle 5: cksum=3377643430
+- (mmap-shuffle) shuffle 6: cksum=658047850
+- (mmap-shuffle) shuffle 7: cksum=493716582
+- (mmap-shuffle) shuffle 8: cksum=3359519593
+- (mmap-shuffle) shuffle 9: cksum=143675990
+- (mmap-shuffle) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-fd:mmap-bad-fd --swap-disk=4 -- -q   -f run mmap-bad-fd 
 perl -I../.. ../../tests/vm/mmap-bad-fd.ck tests/vm/mmap-bad-fd tests/vm/mmap-bad-fd.result
 pass tests/vm/mmap-bad-fd
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-clean:mmap-clean -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-clean 
 perl -I../.. ../../tests/vm/mmap-clean.ck tests/vm/mmap-clean tests/vm/mmap-clean.result
-pass tests/vm/mmap-clean
+FAIL tests/vm/mmap-clean
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-clean) begin
+  (mmap-clean) open "sample.txt"
+  (mmap-clean) mmap "sample.txt"
+  (mmap-clean) write "sample.txt"
+  (mmap-clean) munmap "sample.txt"
+  (mmap-clean) seek "sample.txt"
+  (mmap-clean) read "sample.txt"
+  (mmap-clean) file change was retained after munmap
+  (mmap-clean) end
+Differences in `diff -u' format:
+  (mmap-clean) begin
+  (mmap-clean) open "sample.txt"
+  (mmap-clean) mmap "sample.txt"
+- (mmap-clean) write "sample.txt"
+- (mmap-clean) munmap "sample.txt"
+- (mmap-clean) seek "sample.txt"
+- (mmap-clean) read "sample.txt"
+- (mmap-clean) file change was retained after munmap
+- (mmap-clean) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-inherit:mmap-inherit -p ../../tests/vm/sample.txt:sample.txt -p tests/vm/child-inherit:child-inherit --swap-disk=4 -- -q   -f run mmap-inherit 
 perl -I../.. ../../tests/vm/mmap-inherit.ck tests/vm/mmap-inherit tests/vm/mmap-inherit.result
-pass tests/vm/mmap-inherit
+FAIL tests/vm/mmap-inherit
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-inherit) begin
+  (mmap-inherit) open "sample.txt"
+  (mmap-inherit) mmap "sample.txt"
+  (mmap-inherit) exec "child-inherit"
+  (child-inherit) begin
+  child-inherit: exit(-1)
+  (mmap-inherit) checking that mmap'd file still has same data
+  (mmap-inherit) end
+  mmap-inherit: exit(0)
+Differences in `diff -u' format:
+  (mmap-inherit) begin
+  (mmap-inherit) open "sample.txt"
+  (mmap-inherit) mmap "sample.txt"
+- (mmap-inherit) exec "child-inherit"
+- (child-inherit) begin
+- child-inherit: exit(-1)
+- (mmap-inherit) checking that mmap'd file still has same data
+- (mmap-inherit) end
+- mmap-inherit: exit(0)
++ mmap-inherit: exit(-1)
+
+(User fault messages are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-misalign:mmap-misalign -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-misalign 
 perl -I../.. ../../tests/vm/mmap-misalign.ck tests/vm/mmap-misalign tests/vm/mmap-misalign.result
 pass tests/vm/mmap-misalign
@@ -335,7 +392,27 @@ perl -I../.. ../../tests/vm/mmap-over-stk.ck tests/vm/mmap-over-stk tests/vm/mma
 pass tests/vm/mmap-over-stk
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-remove:mmap-remove -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-remove 
 perl -I../.. ../../tests/vm/mmap-remove.ck tests/vm/mmap-remove tests/vm/mmap-remove.result
-pass tests/vm/mmap-remove
+FAIL tests/vm/mmap-remove
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-remove) begin
+  (mmap-remove) open "sample.txt"
+  (mmap-remove) mmap "sample.txt"
+  (mmap-remove) remove "sample.txt"
+  (mmap-remove) try to open "sample.txt"
+  (mmap-remove) create "another"
+  (mmap-remove) end
+Differences in `diff -u' format:
+  (mmap-remove) begin
+  (mmap-remove) open "sample.txt"
+  (mmap-remove) mmap "sample.txt"
+- (mmap-remove) remove "sample.txt"
+- (mmap-remove) try to open "sample.txt"
+- (mmap-remove) create "another"
+- (mmap-remove) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-zero:mmap-zero --swap-disk=4 -- -q   -f run mmap-zero 
 perl -I../.. ../../tests/vm/mmap-zero.ck tests/vm/mmap-zero tests/vm/mmap-zero.result
 pass tests/vm/mmap-zero
@@ -350,16 +427,141 @@ perl -I../.. ../../tests/vm/mmap-zero-len.ck tests/vm/mmap-zero-len tests/vm/mma
 pass tests/vm/mmap-zero-len
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-off:mmap-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-off 
 perl -I../.. ../../tests/vm/mmap-off.ck tests/vm/mmap-off tests/vm/mmap-off.result
-pass tests/vm/mmap-off
+FAIL tests/vm/mmap-off
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-off) begin
+  (mmap-off) open "large.txt"
+  (mmap-off) try to mmap with offset 0x1000
+  (mmap-off) validate mmap.
+  (mmap-off) validated.
+  (mmap-off) write to mmap
+  (mmap-off) validate contents.
+  (mmap-off) open "large.txt"
+  (mmap-off) read "large.txt" Page 0
+  (mmap-off) validate page 0.
+  (mmap-off) validated.
+  (mmap-off) read "large.txt" Page 1
+  (mmap-off) validate page 1.
+  (mmap-off) validated.
+  (mmap-off) success
+  (mmap-off) end
+  mmap-off: exit(0)
+Differences in `diff -u' format:
+  (mmap-off) begin
+  (mmap-off) open "large.txt"
+  (mmap-off) try to mmap with offset 0x1000
+- (mmap-off) validate mmap.
+- (mmap-off) validated.
+- (mmap-off) write to mmap
+- (mmap-off) validate contents.
+- (mmap-off) open "large.txt"
+- (mmap-off) read "large.txt" Page 0
+- (mmap-off) validate page 0.
+- (mmap-off) validated.
+- (mmap-off) read "large.txt" Page 1
+- (mmap-off) validate page 1.
+- (mmap-off) validated.
+- (mmap-off) success
+- (mmap-off) end
+- mmap-off: exit(0)
++ mmap-off: exit(-1)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-bad-off:mmap-bad-off -p ../../tests/vm/large.txt:large.txt --swap-disk=4 -- -q   -f run mmap-bad-off 
 perl -I../.. ../../tests/vm/mmap-bad-off.ck tests/vm/mmap-bad-off tests/vm/mmap-bad-off.result
-pass tests/vm/mmap-bad-off
+FAIL tests/vm/mmap-bad-off
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-bad-off) begin
+  (mmap-bad-off) open "large.txt"
+  (mmap-bad-off) try to mmap invalid offset
+  (mmap-bad-off) end
+  mmap-bad-off: exit(0)
+Differences in `diff -u' format:
+  (mmap-bad-off) begin
+  (mmap-bad-off) open "large.txt"
+  (mmap-bad-off) try to mmap invalid offset
+- (mmap-bad-off) end
+- mmap-bad-off: exit(0)
++ mmap-bad-off: exit(-1)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/mmap-kernel:mmap-kernel -p ../../tests/vm/sample.txt:sample.txt --swap-disk=4 -- -q   -f run mmap-kernel 
 perl -I../.. ../../tests/vm/mmap-kernel.ck tests/vm/mmap-kernel tests/vm/mmap-kernel.result
-pass tests/vm/mmap-kernel
+FAIL tests/vm/mmap-kernel
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (mmap-kernel) begin
+  (mmap-kernel) open "sample.txt"
+  (mmap-kernel) try to mmap over kernel 0
+  (mmap-kernel) try to mmap over kernel 1
+  (mmap-kernel) try to mmap over kernel 2
+  (mmap-kernel) end
+  mmap-kernel: exit(0)
+Differences in `diff -u' format:
+  (mmap-kernel) begin
+  (mmap-kernel) open "sample.txt"
+  (mmap-kernel) try to mmap over kernel 0
+- (mmap-kernel) try to mmap over kernel 1
+- (mmap-kernel) try to mmap over kernel 2
+- (mmap-kernel) end
+- mmap-kernel: exit(0)
++ mmap-kernel: exit(-1)
 pintos -v -k -T 600 -m 20   --fs-disk=10 -p tests/vm/lazy-file:lazy-file -p ../../tests/vm/sample.txt:sample.txt -p ../../tests/vm/small.txt:small.txt --swap-disk=4 -- -q   -f run lazy-file 
 perl -I../.. ../../tests/vm/lazy-file.ck tests/vm/lazy-file tests/vm/lazy-file.result
-pass tests/vm/lazy-file
+FAIL tests/vm/lazy-file
+Test output failed to match any acceptable form.
+
+Acceptable output:
+  (lazy-file) begin
+  (lazy-file) open "small.txt"
+  (lazy-file) sizeof small: 10017
+  (lazy-file) page aligned size of small: 12288
+  (lazy-file) mmap "small.txt"
+  (lazy-file) initial pages status
+  (lazy-file) check if page is not loaded
+  (lazy-file) check if page is not loaded
+  (lazy-file) check if page is not loaded
+  (lazy-file) load pages (3)
+  (lazy-file) load page [0]
+  (lazy-file) check if page is loaded
+  (lazy-file) check if page is not loaded
+  (lazy-file) check if page is not loaded
+  (lazy-file) load page [1]
+  (lazy-file) check if page is loaded
+  (lazy-file) check if page is loaded
+  (lazy-file) check if page is not loaded
+  (lazy-file) load page [2]
+  (lazy-file) check if page is loaded
+  (lazy-file) check if page is loaded
+  (lazy-file) check if page is loaded
+  (lazy-file) end
+Differences in `diff -u' format:
+  (lazy-file) begin
+  (lazy-file) open "small.txt"
+  (lazy-file) sizeof small: 10017
+  (lazy-file) page aligned size of small: 12288
+  (lazy-file) mmap "small.txt"
+- (lazy-file) initial pages status
+- (lazy-file) check if page is not loaded
+- (lazy-file) check if page is not loaded
+- (lazy-file) check if page is not loaded
+- (lazy-file) load pages (3)
+- (lazy-file) load page [0]
+- (lazy-file) check if page is loaded
+- (lazy-file) check if page is not loaded
+- (lazy-file) check if page is not loaded
+- (lazy-file) load page [1]
+- (lazy-file) check if page is loaded
+- (lazy-file) check if page is loaded
+- (lazy-file) check if page is not loaded
+- (lazy-file) load page [2]
+- (lazy-file) check if page is loaded
+- (lazy-file) check if page is loaded
+- (lazy-file) check if page is loaded
+- (lazy-file) end
+
+(Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/vm/lazy-anon:lazy-anon --swap-disk=4 -- -q   -f run lazy-anon 
 perl -I../.. ../../tests/vm/lazy-anon.ck tests/vm/lazy-anon tests/vm/lazy-anon.result
 pass tests/vm/lazy-anon
@@ -492,8 +694,7 @@ Differences in `diff -u' format:
 (Process exit codes are excluded for matching purposes.)
 pintos -v -k -T 600 -m 40   --fs-disk=10 -p tests/vm/swap-fork:swap-fork -p tests/vm/child-swap:child-swap --swap-disk=200 -- -q   -f run swap-fork 
 perl -I../.. ../../tests/vm/swap-fork.ck tests/vm/swap-fork tests/vm/swap-fork.result
-FAIL tests/vm/swap-fork
-run: More than one child process' stack is corrupted: FAILED
+pass tests/vm/swap-fork
 pintos -v -k -T 60 -m 20   --fs-disk=10 -p tests/filesys/base/lg-create:lg-create --swap-disk=4 -- -q   -f run lg-create 
 perl -I../.. ../../tests/filesys/base/lg-create.ck tests/filesys/base/lg-create tests/filesys/base/lg-create.result
 pass tests/filesys/base/lg-create
@@ -541,53 +742,7 @@ perl -I../.. ../../tests/threads/alarm-multiple.ck tests/threads/alarm-multiple 
 pass tests/threads/alarm-multiple
 pintos -v -k -T 60 -m 20   --fs-disk=10  --swap-disk=4 -- -q  -threads-tests -f run alarm-simultaneous 
 perl -I../.. ../../tests/threads/alarm-simultaneous.ck tests/threads/alarm-simultaneous tests/threads/alarm-simultaneous.result
-FAIL tests/threads/alarm-simultaneous
-Test output failed to match any acceptable form.
-
-Acceptable output:
-  (alarm-simultaneous) begin
-  (alarm-simultaneous) Creating 3 threads to sleep 5 times each.
-  (alarm-simultaneous) Each thread sleeps 10 ticks each time.
-  (alarm-simultaneous) Within an iteration, all threads should wake up on the same tick.
-  (alarm-simultaneous) iteration 0, thread 0: woke up after 10 ticks
-  (alarm-simultaneous) iteration 0, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 0, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) iteration 1, thread 0: woke up 10 ticks later
-  (alarm-simultaneous) iteration 1, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 1, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) iteration 2, thread 0: woke up 10 ticks later
-  (alarm-simultaneous) iteration 2, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 2, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) iteration 3, thread 0: woke up 10 ticks later
-  (alarm-simultaneous) iteration 3, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 3, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) iteration 4, thread 0: woke up 10 ticks later
-  (alarm-simultaneous) iteration 4, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 4, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) end
-Differences in `diff -u' format:
-  (alarm-simultaneous) begin
-  (alarm-simultaneous) Creating 3 threads to sleep 5 times each.
-  (alarm-simultaneous) Each thread sleeps 10 ticks each time.
-  (alarm-simultaneous) Within an iteration, all threads should wake up on the same tick.
-  (alarm-simultaneous) iteration 0, thread 0: woke up after 10 ticks
-  (alarm-simultaneous) iteration 0, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 0, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) iteration 1, thread 0: woke up 10 ticks later
-  (alarm-simultaneous) iteration 1, thread 1: woke up 0 ticks later
-- (alarm-simultaneous) iteration 1, thread 2: woke up 0 ticks later
-- (alarm-simultaneous) iteration 2, thread 0: woke up 10 ticks later
-+ (alarm-simultaneous) iteration 1, thread 2: woke up 1 ticks later
-+ (alarm-simultaneous) iteration 2, thread 0: woke up 9 ticks later
-  (alarm-simultaneous) iteration 2, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 2, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) iteration 3, thread 0: woke up 10 ticks later
-  (alarm-simultaneous) iteration 3, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 3, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) iteration 4, thread 0: woke up 10 ticks later
-  (alarm-simultaneous) iteration 4, thread 1: woke up 0 ticks later
-  (alarm-simultaneous) iteration 4, thread 2: woke up 0 ticks later
-  (alarm-simultaneous) end
+pass tests/threads/alarm-simultaneous
 pintos -v -k -T 60 -m 20   --fs-disk=10  --swap-disk=4 -- -q  -threads-tests -f run alarm-priority 
 perl -I../.. ../../tests/threads/alarm-priority.ck tests/threads/alarm-priority tests/threads/alarm-priority.result
 pass tests/threads/alarm-priority
@@ -668,7 +823,7 @@ pass tests/userprog/read-zero
 pass tests/userprog/read-stdout
 pass tests/userprog/read-bad-fd
 pass tests/userprog/write-normal
-FAIL tests/userprog/write-bad-ptr
+pass tests/userprog/write-bad-ptr
 pass tests/userprog/write-boundary
 pass tests/userprog/write-zero
 pass tests/userprog/write-stdin
@@ -711,41 +866,41 @@ FAIL tests/vm/pt-grow-stk-sc
 pass tests/vm/page-linear
 pass tests/vm/page-parallel
 pass tests/vm/page-merge-seq
-FAIL tests/vm/page-merge-par
+pass tests/vm/page-merge-par
 FAIL tests/vm/page-merge-stk
 FAIL tests/vm/page-merge-mm
 pass tests/vm/page-shuffle
-pass tests/vm/mmap-read
-pass tests/vm/mmap-close
-pass tests/vm/mmap-unmap
-pass tests/vm/mmap-overlap
-pass tests/vm/mmap-twice
-pass tests/vm/mmap-write
-pass tests/vm/mmap-ro
-pass tests/vm/mmap-exit
-pass tests/vm/mmap-shuffle
+FAIL tests/vm/mmap-read
+FAIL tests/vm/mmap-close
+FAIL tests/vm/mmap-unmap
+FAIL tests/vm/mmap-overlap
+FAIL tests/vm/mmap-twice
+FAIL tests/vm/mmap-write
+FAIL tests/vm/mmap-ro
+FAIL tests/vm/mmap-exit
+FAIL tests/vm/mmap-shuffle
 pass tests/vm/mmap-bad-fd
-pass tests/vm/mmap-clean
-pass tests/vm/mmap-inherit
+FAIL tests/vm/mmap-clean
+FAIL tests/vm/mmap-inherit
 pass tests/vm/mmap-misalign
 pass tests/vm/mmap-null
 pass tests/vm/mmap-over-code
 pass tests/vm/mmap-over-data
 pass tests/vm/mmap-over-stk
-pass tests/vm/mmap-remove
+FAIL tests/vm/mmap-remove
 pass tests/vm/mmap-zero
 pass tests/vm/mmap-bad-fd2
 pass tests/vm/mmap-bad-fd3
 pass tests/vm/mmap-zero-len
-pass tests/vm/mmap-off
-pass tests/vm/mmap-bad-off
-pass tests/vm/mmap-kernel
-pass tests/vm/lazy-file
+FAIL tests/vm/mmap-off
+FAIL tests/vm/mmap-bad-off
+FAIL tests/vm/mmap-kernel
+FAIL tests/vm/lazy-file
 pass tests/vm/lazy-anon
 FAIL tests/vm/swap-file
 FAIL tests/vm/swap-anon
 FAIL tests/vm/swap-iter
-FAIL tests/vm/swap-fork
+pass tests/vm/swap-fork
 pass tests/filesys/base/lg-create
 pass tests/filesys/base/lg-full
 pass tests/filesys/base/lg-random
@@ -761,7 +916,7 @@ pass tests/filesys/base/syn-remove
 pass tests/filesys/base/syn-write
 pass tests/threads/alarm-single
 pass tests/threads/alarm-multiple
-FAIL tests/threads/alarm-simultaneous
+pass tests/threads/alarm-simultaneous
 pass tests/threads/alarm-priority
 pass tests/threads/alarm-zero
 pass tests/threads/alarm-negative
@@ -778,7 +933,8 @@ pass tests/threads/priority-sema
 pass tests/threads/priority-condvar
 pass tests/threads/priority-donate-chain
 FAIL tests/vm/cow/cow-simple
-11 of 141 tests failed.
+23 of 141 tests failed.
 ../../tests/Make.tests:28: recipe for target 'check' failed
 make[1]: *** [check] Error 1
 make[1]: Leaving directory '/workspaces/JUNGLE-Pintos-VM2/pintos-kaist/vm/build'
+jungle@8afb3edd4c47:/workspaces/JUNGLE-Pintos-VM2/pintos-kaist/vm$ 

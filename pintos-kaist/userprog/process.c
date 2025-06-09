@@ -19,6 +19,7 @@
 #include "threads/vaddr.h"
 #include "intrinsic.h"
 #include "vm/vm.h"
+#include "userprog/syscall.h"
 #define VM
 
 #ifdef VM
@@ -423,16 +424,19 @@ int process_wait(tid_t child_tid UNUSED)
 void process_exit(void)
 {
 	struct thread *curr = thread_current();
-	/* TODO: Your code goes here.
-	 * TODO: Implement process termination message (see
-	 * TODO: project2/process_termination.html).
-	 * TODO: We recommend you to implement process resource cleanup here. */
+	/* Your code goes here.
+	 * Implement process termination message (see
+	 * project2/process_termination.html).
+	 * We recommend you to implement process resource cleanup here. */
 
 	// printf("process_exit()!");
 	for (int i = 2; i < FDCOUNT_LIMIT; i++)
 	{
 		if (curr->fd_table[i] != NULL)
-			close(i);
+		{
+            file_close(curr->fd_table[i]); // 시스템 콜 없이 직접 닫기
+            curr->fd_table[i] = NULL;
+		}
 	}
 	palloc_free_multiple(curr->fd_table, FDT_PAGES);
 	file_close(curr->running); // 현재 실행 중인 파일도 닫는다. load()에 있었던 걸 여기로 옮김.
@@ -912,6 +916,7 @@ load_segment(struct file *file, off_t ofs, uint8_t *upage,
 
 		// uninit page 생성.
 		// HACK: LLM은 VM_FILE을 써야 한다고 주장.
+		dprintfg("[loag_segment] upage: %p\n", upage);
 		if (!vm_alloc_page_with_initializer(VM_ANON, upage,
 											writable, lazy_load_segment, aux)) // uninit 페이지를 만들고 익명 페이지로 쓰겠다고 예약
 		{
