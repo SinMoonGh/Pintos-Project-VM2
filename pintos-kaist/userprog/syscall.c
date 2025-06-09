@@ -217,6 +217,7 @@ int open(const char *filename) {
  */
 void close(int fd){
 	struct file *file_obj = process_get_file_by_fd(fd);
+	// dprintfg()
 	if (file_obj == NULL)
 		return;
 	file_close(file_obj);

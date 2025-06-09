@@ -9,7 +9,7 @@
 static bool file_backed_swap_in(struct page *page, void *kva);
 static bool file_backed_swap_out(struct page *page);
 static void file_backed_destroy(struct page *page);
-boollazy_load_file_backed(struct page *page, void *aux);
+bool lazy_load_file_backed(struct page *page, void *aux);
 /* DO NOT MODIFY this struct */
 static const struct page_operations file_ops = {
 	.swap_in = file_backed_swap_in,
@@ -40,7 +40,7 @@ bool file_backed_initializer(struct page *page, enum vm_type type, void *kva)
 
 	struct lazy_aux_file_backed *lazy_aux = (struct lazy_aux_file_backed *)aux;
 	struct file_page *file_page = &page->file;
-	
+
 	// file_page 멤버 초기화.
 	file_page->file = lazy_aux->file;
 	file_page->size = lazy_aux->read_bytes;
@@ -199,27 +199,29 @@ void do_munmap(void *addr)
 	struct thread *curr = thread_current();
 	struct supplemental_page_table *spt = &curr->spt; // 현재 스레드의 spt 정보 참조
 
-	for(struct list_elem *e = list_begin(&curr->mmap_list); e != list_end(&curr->mmap_list); e = list_next(e)){
+	struct list_elem *e = list_begin(&curr->mmap_list);
+    while (e != list_end(&curr->mmap_list)) {
+		struct list_elem *next = list_next(e);
 		struct mmap_file *mmap_file = list_entry(e, struct mmap_file, elem);
 		void *unmap_addr = mmap_file->start_addr;
 		size_t length = mmap_file->start_length;
 
 		if(mmap_file->start_addr == addr){
-			dprintfg("[do_mmap] start_addr : %p, addr : %p\n", mmap_file->start_addr, addr);
+			dprintfg("[do_munmap] start_addr : %p, addr : %p\n", mmap_file->start_addr, addr);
 
 			while(length > 0){
 				dprintfg("[do_mmap] while() 안의 length : %d\n", length);
 				struct page *page = spt_find_page(spt, unmap_addr); // spt정보를 가져온다.
-				dprintfg("[do_mmap] spt find page : %p\n", page);
+				dprintfg("[do_munmap] spt find page : %p\n", page);
 
 				// spt remove page debug log
 				if (page == NULL) {
 					dprintfg("[do_munmap] spt_find_page() 결과 NULL! 잘못된 주소일 가능성\n");
 					break;
 				}
-				dprintfg("[debug] page: %p, &page->hash_elem: %p, page->va: %p\n", page, &page->hash_elem, page->va);
+				dprintfg("[do_munmap] page: %p, &page->hash_elem: %p, page->va: %p\n", page, &page->hash_elem, page->va);
 
-				dprintfg("[debug] hash_elem addr: %p, 예상 page addr: %p\n", &page->hash_elem, hash_entry(&page->hash_elem, struct page, hash_elem));
+				dprintfg("[do_munmap] hash_elem addr: %p, 예상 page addr: %p\n", &page->hash_elem, hash_entry(&page->hash_elem, struct page, hash_elem));
 
 				// spt remove page start
 				spt_remove_page(spt, page);
@@ -229,7 +231,10 @@ void do_munmap(void *addr)
 			}
 
 			list_remove(&mmap_file->elem);
+			dprintfg("[do_munmap] list remove(mmap file -> elem) success\n");
 			free(mmap_file);
-		}
-	}
+			dprintfg("[do_munmap] free(mmap file) success\n");
+        }
+        e = next;
+    }
 }
