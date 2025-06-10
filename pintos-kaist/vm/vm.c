@@ -238,9 +238,22 @@ vm_get_victim(void)
 static struct frame *
 vm_evict_frame(void)
 {
-	struct frame *victim UNUSED = vm_get_victim();
 	/* TODO: victim을 스왑 아웃하고 교체된 프레임을 반환하세요. */
-	
+	struct frame *victim UNUSED = vm_get_victim();
+	struct thread *curr = thread_current();
+	struct page *page = victim->page;
+	struct frame *change_f;
+	// 퇴거시킬 때 dirty bit를 check해야하는데 dirty bit가 1이면 swap out()을 진행하고, 0이면 그냥 버려도 된다.
+	if(pml4_is_dirty(curr->pml4, page->va)){
+		if(!swap_out(page)){
+			PANIC("[vm_evict_frame]swap out fail!!!\n");
+		}
+	}
+
+	page->frame = NULL;
+	victim->page = NULL;
+
+	return victim;
 }
 
 /* Gets a new physical page from the user pool by calling palloc_get_page.
