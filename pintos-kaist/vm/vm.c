@@ -56,6 +56,10 @@ static struct frame *vm_get_victim(void);
 static bool vm_do_claim_page(struct page *page);
 static struct frame *vm_evict_frame(void);
 
+/* 헬퍼 변수들 */
+static struct list frame_table;
+// frame lock 선언
+
 // 이 함수는 어디서 뭘 하는 함수인가요? 가상공간 어딘가에 페이지를 만들어 내는 함수.
 // 주어진 타입으로 uninit page를 생성합니다.
 // 초기화되지 않은 페이지의 swap_in 핸들러는 페이지를 자동으로 주어진 타입에 맞게 초기화하고, 주어진 AUX와 함께 INIT을 호출합니다.
@@ -196,10 +200,37 @@ void spt_remove_page(struct supplemental_page_table *spt, struct page *page)
 static struct frame *
 vm_get_victim(void)
 {
-	struct frame *victim = NULL;
 	/* TODO: 페이지 교체 정책은 여러분이 결정할 수 있습니다. */
+	struct thread *curr = thread_current();
+	struct list_elem *e = list_begin(&frame_table);
+		
+	while(e != list_end(&frame_table)){
+		struct frame *f = list_entry(e, struct frame, frame_elem);
+		struct page *page = f->page;
 
-	return victim;
+		// 만약 frame이 존재하지 않는다면...
+		if(f == NULL){
+			PANIC("[vm_get_victim] frame이 존재하지 않습니다...\n");
+		}
+
+		if (VM_ANON != page->operations->type){
+			e = list_next(e);
+			continue;
+		}
+
+		if(pml4_is_accessed(curr->pml4, page->va)){ 
+			/* accessed bit를 reset()을 사용해서 0으로 만들고 넘어간다.
+			* 내 생각으로는 이미 한 번 접근한 page는 접근 bit를 1로 만들지만 다시 접근했을 때 0으로 초기화 해주는 이유는
+			* 기존의 page가 메모리 공간을 차지함으로써 새로운 page가 로드되는 걸 막기 때문이지 않을까?? */
+			pml4_set_accessed(curr->pml4, page->va, false);
+			e = list_next(e);
+			continue;
+		}
+		
+		list_remove(e);
+		return f;
+	}
+	PANIC("[vm_get_victim] frame victim이 존재하지 않아요 ㅠㅠ\n");
 }
 
 /* 하나의 페이지를 교체하고 해당 프레임을 반환합니다.
@@ -209,8 +240,7 @@ vm_evict_frame(void)
 {
 	struct frame *victim UNUSED = vm_get_victim();
 	/* TODO: victim을 스왑 아웃하고 교체된 프레임을 반환하세요. */
-
-	return NULL;
+	
 }
 
 /* Gets a new physical page from the user pool by calling palloc_get_page.
@@ -244,6 +274,10 @@ vm_get_frame(void)
 		frame = vm_evict_frame(); // TODO: evict frame 함수가 아직 구현되지 않음.
 	}
 	ASSERT(frame->kva != NULL);
+
+	// frame lock 걸어줘야 함.
+	list_push_back(&frame_table, &frame->frame_elem);
+	
 	return frame;
 }
 
