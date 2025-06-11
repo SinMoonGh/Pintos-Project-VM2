@@ -25,8 +25,8 @@ void vm_anon_init(void)
     /* swap_disk를 설정하세요. */
     disk_init();
     swap_disk = disk_get(1, 1); // NOTE: disk_get 인자값 적절성 검토 완료. 
-    // size_t swap_size = disk_size(swap_disk); // SECTORS_PER_PAGE;
-    // swap_table = bitmap_create(swap_size);
+    size_t swap_size = disk_size(swap_disk); // SECTORS_PER_PAGE;
+    bitmap_create(swap_size); // disk size만큼 slot을 생성한다. slot은 bitmap으로 관리하며 slot의 사용여부는 0과 1로 판단한다.
 }
 
 // “이 함수는 먼저 page->operations에서 익명 페이지에 대한 핸들러를 설정합니다. 현재 빈 구조체인 anon_page에서
@@ -62,7 +62,8 @@ anon_swap_in(struct page *page, void *kva)
 static bool
 anon_swap_out(struct page *page)
 {
-    // 메모리에서 디스크로 내용을 복사하여 익명 페이지를 스왑 디스크로 교체합니다. 
+    // TODO: 메모리에서 디스크로 내용을 복사하여 익명 페이지를 스왑 디스크로 교체합니다. 
+
     // 먼저 스왑 테이블을 사용하여 디스크에서 사용 가능한 스왑 슬롯을 찾은 다음 데이터 페이지를 슬롯에 복사합니다. 
     // 데이터의 위치는 페이지 구조체에 저장되어야 합니다. 디스크에 사용 가능한 슬롯이 더 이상 없으면 커널 패닉이 발생할 수 있습니다.
     struct anon_page *anon_page = &page->anon;

@@ -315,6 +315,7 @@ vm_stack_growth(void *addr)
 static bool
 vm_handle_wp(struct page *page UNUSED)
 {
+	// 쓰기 보호??
 }
 /*
 Handling page fault
