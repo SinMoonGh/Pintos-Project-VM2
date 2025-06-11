@@ -42,10 +42,13 @@ void check_address(const uint64_t *addr);
  */
 void check_address(const uint64_t *addr){
 	dprintfg("[check_address] routine start: %p\n", addr); 
+	dprintfi("[check_address: %s] pivot 1\n", thread_current()->name);
 	if (addr == NULL || !(is_user_vaddr(addr))) {
 		dprintfg("[check_address] check failed!\n");
+		dprintfi("[check_address: %s] pivot 2\n", thread_current()->name);
 		exit(-1);
 	}
+	dprintfi("[check_address: %s] pivot 3\n", thread_current()->name);
 	dprintfg("[check_address] check pass!\n");
 }
 
@@ -193,26 +196,24 @@ bool remove(const char *file) {
  * @param file: 오픈할 파일.
  */
 int open(const char *filename) {
-	dprintfg("[open] routine start. filename: %p\n", filename);
 	check_address(filename); // 이상한 포인터면 즉시 종료
-	dprintfg("[open] validation complete\n");
+	lock_acquire(&filesys_lock);
+
 	struct file *file_obj = filesys_open(filename);
+	lock_release(&filesys_lock);
 	
 	if (file_obj == NULL) {
 		return -1;
 	}
 
 	int fd = process_add_file(file_obj);
-	dprintfg("[open] process add file done\n");
 
 	if (fd == -1) { // fd table 꽉찬 경우 그냥 닫아버림
-		dprintfg("[open] failed\n");
 		lock_acquire(&filesys_lock);
 		file_close(file_obj);
 		lock_release(&filesys_lock);
     	file_obj = NULL;
 	}
-	dprintfg("[open] success. returnin fd: %d\n", fd);
 	
 	return fd;
 }
@@ -228,9 +229,9 @@ void close(int fd){
 	struct file *file_obj = process_get_file_by_fd(fd);
 	if (file_obj == NULL)
 		return;
-	lock_acquire(&filesys_lock);
+	// lock_acquire(&filesys_lock);
 	file_close(file_obj);
-	lock_release(&filesys_lock);
+	// lock_release(&filesys_lock);
 	process_close_file_by_id(fd);
 }
 
