@@ -21,6 +21,10 @@ struct lazy_load_args
 	size_t zero_bytes;
 };
 
+/* 헬퍼 변수들 */
+static struct list frame_table;
+// frame lock 선언
+
 /* 가상 메모리 서브시스템을 초기화합니다.
  * 각 서브시스템의 초기화 코드를 호출합니다. */
 void vm_init(void)
@@ -33,6 +37,7 @@ void vm_init(void)
 	register_inspect_intr();
 	/* 이 위의 코드는 수정하지 마세요. */
 	/* TODO: 여기에 여러분의 코드를 작성하세요. */
+	list_init(&frame_table);
 }
 
 /* 페이지의 타입을 가져옵니다.
@@ -55,10 +60,6 @@ page_get_type(struct page *page)
 static struct frame *vm_get_victim(void);
 static bool vm_do_claim_page(struct page *page);
 static struct frame *vm_evict_frame(void);
-
-/* 헬퍼 변수들 */
-static struct list frame_table;
-// frame lock 선언
 
 // 이 함수는 어디서 뭘 하는 함수인가요? 가상공간 어딘가에 페이지를 만들어 내는 함수.
 // 주어진 타입으로 uninit page를 생성합니다.
