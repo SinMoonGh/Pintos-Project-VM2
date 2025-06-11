@@ -201,37 +201,16 @@ void spt_remove_page(struct supplemental_page_table *spt, struct page *page)
 static struct frame *
 vm_get_victim(void)
 {
+	struct frame *victim = NULL;
 	/* TODO: 페이지 교체 정책은 여러분이 결정할 수 있습니다. */
-	struct thread *curr = thread_current();
-	struct list_elem *e = list_begin(&frame_table);
-		
-	while(e != list_end(&frame_table)){
-		struct frame *f = list_entry(e, struct frame, frame_elem);
-		struct page *page = f->page;
-
-		// 만약 frame이 존재하지 않는다면...
-		if(f == NULL){
-			PANIC("[vm_get_victim] frame이 존재하지 않습니다...\n");
-		}
-
-		if (VM_ANON != page->operations->type){
-			e = list_next(e);
-			continue;
-		}
-
-		if(pml4_is_accessed(curr->pml4, page->va)){ 
-			/* accessed bit를 reset()을 사용해서 0으로 만들고 넘어간다.
-			* 내 생각으로는 이미 한 번 접근한 page는 접근 bit를 1로 만들지만 다시 접근했을 때 0으로 초기화 해주는 이유는
-			* 기존의 page가 메모리 공간을 차지함으로써 새로운 page가 로드되는 걸 막기 때문이지 않을까?? */
-			pml4_set_accessed(curr->pml4, page->va, false);
-			e = list_next(e);
-			continue;
-		}
-		
-		list_remove(e);
-		return f;
+	
+	if (!list_empty(&frame_table))
+	{
+		struct list_elem *e = list_pop_front(&frame_table); // 가장 오래된 프레임 선택.
+		victim = list_entry(e, struct frame, frame_elem);
 	}
-	PANIC("[vm_get_victim] frame victim이 존재하지 않아요 ㅠㅠ\n");
+
+	return victim;
 }
 
 /* 하나의 페이지를 교체하고 해당 프레임을 반환합니다.
@@ -243,16 +222,13 @@ vm_evict_frame(void)
 	struct frame *victim UNUSED = vm_get_victim();
 	struct thread *curr = thread_current();
 	struct page *page = victim->page;
-	struct frame *change_f;
+
 	// 퇴거시킬 때 dirty bit를 check해야하는데 dirty bit가 1이면 swap out()을 진행하고, 0이면 그냥 버려도 된다.
 	if(pml4_is_dirty(curr->pml4, page->va)){
 		if(!swap_out(page)){
 			PANIC("[vm_evict_frame]swap out fail!!!\n");
 		}
 	}
-
-	page->frame = NULL;
-	victim->page = NULL;
 
 	return victim;
 }

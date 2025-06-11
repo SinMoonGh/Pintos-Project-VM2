@@ -93,6 +93,9 @@ anon_swap_out(struct page *page)
 
     anon_page->swap_slot_idx = swap_slot_idx;
 
+    page->frame = NULL;
+	page = NULL;
+
     return true;
 }
 
