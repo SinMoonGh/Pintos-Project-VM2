@@ -1,5 +1,5 @@
 /* anon.c: 디스크 이미지가 아닌 페이지(즉, 익명 페이지)의 구현 */
-
+#include "lib/kernel/bitmap.h"
 #include "vm/vm.h"
 #include "devices/disk.h"
 
@@ -17,6 +17,10 @@ static const struct page_operations anon_ops = {
     .type = VM_ANON,
 };
 
+/* 추가로 전역변수 선언 */
+static struct bitmap *swap_table;
+// lock 선언
+
 // assertion `intr_handlers[vec_no] == NULL' failed.
 /* 익명 페이지를 위한 데이터를 초기화합니다 */
 void vm_anon_init(void)
@@ -24,9 +28,13 @@ void vm_anon_init(void)
     // TODO: swap 구현 시 아래 내용을 추가해야 함. 사유는 그때 가서 이해하기.
     /* swap_disk를 설정하세요. */
     disk_init();
-    swap_disk = disk_get(1, 1); // NOTE: disk_get 인자값 적절성 검토 완료. 
-    size_t swap_size = disk_size(swap_disk); // SECTORS_PER_PAGE;
-    bitmap_create(swap_size); // disk size만큼 slot을 생성한다. slot은 bitmap으로 관리하며 slot의 사용여부는 0과 1로 판단한다.
+    swap_disk = disk_get(1, 1); // NOTE: disk_get 인자값 적절성 검토 완료.
+    if(swap_disk == NULL){
+        PANIC("[vm_anon_init] swap dist를 가져오는 데 실패함\n");
+    }
+    size_t sector_count = disk_size(swap_disk); // SECTORS_PER_PAGE;
+    size_t slot_count = sector_count / 8;
+    swap_table = bitmap_create(slot_count); // disk size만큼 slot을 생성한다. slot은 bitmap으로 관리하며 slot의 사용여부는 0과 1로 판단한다.
 }
 
 // “이 함수는 먼저 page->operations에서 익명 페이지에 대한 핸들러를 설정합니다. 현재 빈 구조체인 anon_page에서
@@ -67,7 +75,7 @@ anon_swap_out(struct page *page)
     // 먼저 스왑 테이블을 사용하여 디스크에서 사용 가능한 스왑 슬롯을 찾은 다음 데이터 페이지를 슬롯에 복사합니다. 
     // 데이터의 위치는 페이지 구조체에 저장되어야 합니다. 디스크에 사용 가능한 슬롯이 더 이상 없으면 커널 패닉이 발생할 수 있습니다.
     struct anon_page *anon_page = &page->anon;
-
+    bitmap_scan_and_flip(swap_table, 0, 1, false);
 }
 
 /* 익명 페이지를 파괴합니다. PAGE는 호출자가 해제합니다 */
