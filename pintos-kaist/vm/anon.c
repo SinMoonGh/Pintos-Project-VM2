@@ -2,6 +2,7 @@
 #include "lib/kernel/bitmap.h"
 #include "vm/vm.h"
 #include "devices/disk.h"
+#include "lib/string.h"
 
 /* 이 아래 줄을 수정하지 마세요 */
 static struct disk *swap_disk;
@@ -75,7 +76,18 @@ anon_swap_out(struct page *page)
     // 먼저 스왑 테이블을 사용하여 디스크에서 사용 가능한 스왑 슬롯을 찾은 다음 데이터 페이지를 슬롯에 복사합니다. 
     // 데이터의 위치는 페이지 구조체에 저장되어야 합니다. 디스크에 사용 가능한 슬롯이 더 이상 없으면 커널 패닉이 발생할 수 있습니다.
     struct anon_page *anon_page = &page->anon;
-    bitmap_scan_and_flip(swap_table, 0, 1, false);
+    size_t swap_slot_idx = bitmap_scan_and_flip(swap_table, 0, 1, false);
+    if(swap_slot_idx == BITMAP_ERROR){
+        PANIC("[anon_swap_out] 비어있는 swap slot을 찾는데 실패했습니다\n");
+    }
+    
+    for(int i=0; i<8; i++){
+        disk_write(swap_disk, swap_slot_idx * DISK_SECTOR_COUNT + i, page->frame->kva + DISK_SECTOR_SIZE * i);
+    }
+
+    anon_page->swap_slot_idx = swap_slot_idx;
+
+    return true;
 }
 
 /* 익명 페이지를 파괴합니다. PAGE는 호출자가 해제합니다 */
